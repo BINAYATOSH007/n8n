@@ -4,6 +4,7 @@ Collection of real-world automation workflows built using n8n, focusing on AI in
 
 1.📂 Current Project
   🔹 AI Email Classification & Auto-Forwarding
+  
           📂 How to Use
           Import the JSON file into n8n
           Add your Gmail credentials
