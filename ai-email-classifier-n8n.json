@@ -1,0 +1,221 @@
+{
+  "name": "AI Email Classifier",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_GMAIL_ACCOUNT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "senderName",
+              "description": "Extract sender name"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        200,
+        0
+      ],
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        140,
+        200
+      ],
+      "name": "Gemini Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YOUR_API_KEY",
+          "name": "GEMINI_API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.output.senderName }}",
+              "operator": {
+                "operation": "notEmpty"
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "position": [
+        560,
+        0
+      ],
+      "name": "Check Sender"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "intro",
+              "value": "=Dear {{ $json.output.senderName }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "position": [
+        730,
+        -40
+      ],
+      "name": "With Name"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "intro",
+              "value": "Hi"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "position": [
+        730,
+        120
+      ],
+      "name": "Without Name"
+    },
+    {
+      "parameters": {
+        "mode": "combine"
+      },
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        1000,
+        30
+      ],
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "message_id",
+              "value": "={{ $('Gmail Trigger').item.json.id }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('Gmail Trigger').item.json.text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1200,
+        30
+      ],
+      "name": "Clean Data"
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "jobs"
+            },
+            {
+              "category": "spam"
+            },
+            {
+              "category": "otp"
+            },
+            {
+              "category": "personal"
+            },
+            {
+              "category": "career"
+            },
+            {
+              "category": "others"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "position": [
+        1400,
+        30
+      ],
+      "name": "Classifier"
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.message_id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        1900,
+        0
+      ],
+      "name": "Apply Label"
+    },
+    {
+      "parameters": {
+        "sendTo": "your_email@example.com",
+        "subject": "Important Email Detected",
+        "message": "Check your inbox"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        2100,
+        0
+      ],
+      "name": "Forward Important Mail",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_GMAIL_ACCOUNT"
+        }
+      }
+    }
+  ],
+  "connections": {},
+  "active": false
+}
