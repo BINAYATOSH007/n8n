@@ -5,7 +5,8 @@ Collection of real-world automation workflows built using n8n, focusing on AI in
 1.📂 Current Project
   🔹 AI Email Classification & Auto-Forwarding
   
-          📂 How to Use
+  📂 How to Use
+  
           Import the JSON file into n8n
           Add your Gmail credentials
           Configure Gemini API key
@@ -22,27 +23,27 @@ Collection of real-world automation workflows built using n8n, focusing on AI in
         
   🧠 Tech Stack
   
-        Automation: n8n
-        AI Model: Google Gemini (LLM)
-        Email Integration: Gmail API
-        Logic Design: Event-driven workflow
+          Automation: n8n
+          AI Model: Google Gemini (LLM)
+          Email Integration: Gmail API
+          Logic Design: Event-driven workflow
     
   
   🏗️ Workflow Architecture
   
-      Gmail Trigger → detects new emails
-      AI Extractor → extracts sender info
-      Conditional Logic → handles missing data
-      AI Classifier → categorizes email
-      Gmail Actions → apply labels + forward emails
-  
+        Gmail Trigger → detects new emails
+        AI Extractor → extracts sender info
+        Conditional Logic → handles missing data
+        AI Classifier → categorizes email
+        Gmail Actions → apply labels + forward emails
+    
   An intelligent workflow that:
-  
-    📥 Monitors incoming emails in real-time
-    🧠 Classifies emails into categories (Jobs, Spam, OTP, Personal, Career, Others)
-    🏷️ Applies labels automatically in Gmail
-    📤 Forwards important emails to a secondary inbox to my main account
-    🔍 Extracts sender information using AI
+    
+      📥 Monitors incoming emails in real-time
+      🧠 Classifies emails into categories (Jobs, Spam, OTP, Personal, Career, Others)
+      🏷️ Applies labels automatically in Gmail
+      📤 Forwards important emails to a secondary inbox to my main account
+      🔍 Extracts sender information using AI
   
   💡 Use Cases
   
@@ -50,6 +51,11 @@ Collection of real-world automation workflows built using n8n, focusing on AI in
         Reducing spam clutter
         Prioritizing important communication
         Automating inbox management
+
+  🔒 Security Note
+
+        All credentials and personal data have been removed.
+        Please configure your own credentials before running the workflow.
 
 
 
