@@ -1,5 +1,5 @@
 {
-  "name": "AI Email Classifier",
+  "name": "AI Email classifier",
   "nodes": [
     {
       "parameters": {
@@ -10,123 +10,163 @@
             }
           ]
         },
-        "simple": false
+        "simple": false,
+        "filters": {},
+        "options": {}
       },
       "type": "n8n-nodes-base.gmailTrigger",
       "typeVersion": 1.3,
       "position": [
-        0,
+        -128,
         0
       ],
+      "id": "3be4c0d6-ad0d-4f0d-8bf2-93472a4aeee3",
       "name": "Gmail Trigger",
       "credentials": {
         "gmailOAuth2": {
-          "id": "YOUR_CREDENTIAL_ID",
-          "name": "YOUR_GMAIL_ACCOUNT"
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
         }
       }
     },
     {
       "parameters": {
-        "text": "={{ $json.text }}",
+        "text": "={{ $json.headers.from }}",
         "attributes": {
           "attributes": [
             {
               "name": "senderName",
-              "description": "Extract sender name"
+              "description": "Extract the sender's name from this email . if no name , return an empty string."
             }
           ]
+        },
+        "options": {
+          "systemPromptTemplate": "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value return a empty string."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.informationExtractor",
       "typeVersion": 1.2,
       "position": [
-        200,
+        144,
         0
       ],
+      "id": "2295b0d5-d30d-43c6-9cbc-dc109a308eb4",
       "name": "Information Extractor"
     },
     {
-      "parameters": {},
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        140,
-        200
+        144,
+        208
       ],
-      "name": "Gemini Model",
+      "id": "bf7d16bf-d00d-43d5-93b1-4c9237b05071",
+      "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "YOUR_API_KEY",
-          "name": "GEMINI_API"
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
         }
       }
     },
     {
       "parameters": {
         "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
           "conditions": [
             {
+              "id": "3061241c-015f-4d3b-af3f-f0c737b43247",
               "leftValue": "={{ $json.output.senderName }}",
+              "rightValue": "",
               "operator": {
-                "operation": "notEmpty"
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
               }
             }
-          ]
-        }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
       },
       "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
       "position": [
-        560,
-        0
+        528,
+        16
       ],
-      "name": "Check Sender"
+      "id": "87d82206-1544-4548-afcf-e19cae7b36e6",
+      "name": "If"
     },
     {
       "parameters": {
         "assignments": {
           "assignments": [
             {
+              "id": "9a924000-f65e-4480-8797-1aa9e1a2dba5",
               "name": "intro",
-              "value": "=Dear {{ $json.output.senderName }}"
+              "value": "=Dear {{ $json.output.senderName }},",
+              "type": "string"
             }
           ]
-        }
+        },
+        "options": {}
       },
       "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
       "position": [
-        730,
-        -40
+        736,
+        -48
       ],
-      "name": "With Name"
+      "id": "5b60e924-96d9-47f1-b806-53a3c96f513a",
+      "name": "Edit Fields"
     },
     {
       "parameters": {
         "assignments": {
           "assignments": [
             {
+              "id": "78b8d68b-6b63-433b-a742-29ae154f007a",
               "name": "intro",
-              "value": "Hi"
+              "value": "HI,",
+              "type": "string"
             }
           ]
-        }
+        },
+        "options": {}
       },
       "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
       "position": [
-        730,
-        120
+        736,
+        128
       ],
-      "name": "Without Name"
+      "id": "ba28a46f-d863-40bd-a0ed-7cf61c0f193a",
+      "name": "Edit Fields1"
     },
     {
       "parameters": {
-        "mode": "combine"
+        "mode": "combine",
+        "fieldsToMatchString": "intro",
+        "joinMode": "keepNonMatches",
+        "options": {}
       },
       "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
       "position": [
-        1000,
-        30
+        1008,
+        32
       ],
+      "id": "bb5429a1-500d-4469-be9e-696544363119",
       "name": "Merge"
     },
     {
@@ -134,88 +174,905 @@
         "assignments": {
           "assignments": [
             {
+              "id": "b9d5f3bf-4d59-4377-8338-0d01fe79b589",
               "name": "message_id",
-              "value": "={{ $('Gmail Trigger').item.json.id }}"
+              "value": "={{ $('Gmail Trigger').item.json.id }}",
+              "type": "string"
             },
             {
+              "id": "d8bb0540-0d54-4512-b500-431f38d26b4e",
+              "name": "intro",
+              "value": "={{ $json.intro }}",
+              "type": "string"
+            },
+            {
+              "id": "63d45e48-c9d6-4d08-8480-21fb6737586b",
+              "name": "threadId",
+              "value": "={{ $('Gmail Trigger').item.json.threadId }}",
+              "type": "string"
+            },
+            {
+              "id": "3703b393-bd88-4daa-9386-a9b2a1ed9544",
               "name": "text",
-              "value": "={{ $('Gmail Trigger').item.json.text }}"
+              "value": "={{ $('Gmail Trigger').item.json.text }}",
+              "type": "string"
             }
           ]
-        }
+        },
+        "options": {}
       },
       "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
       "position": [
-        1200,
-        30
+        1216,
+        32
       ],
-      "name": "Clean Data"
+      "id": "d403cc65-5d6c-4240-87aa-f371b9c99d8b",
+      "name": "clean data"
     },
     {
       "parameters": {
-        "inputText": "={{ $json.text }}",
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        480
+      ],
+      "id": "ae88c835-d512-4d39-b79e-c39f3579243b",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "u got a message regarding to jobs ",
+        "emailType": "text",
+        "message": "check it related to job",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2384,
+        -336
+      ],
+      "id": "26bca238-f456-4ed2-9634-b3138bfbe4fc",
+      "name": "Send a message",
+      "webhookId": "745ed5f4-9531-4b0a-a174-fb0c8b5d2460",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "message related to interview",
+        "emailType": "text",
+        "message": "=check the messages for interview details :  {{ $json.description }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        3552,
+        496
+      ],
+      "id": "f5a4c196-ae35-4cfb-b2b7-b012fe3a4d05",
+      "name": "Send a message1",
+      "webhookId": "5ec40c38-b01a-44df-80f0-ec43e98aac4f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "messages related to recruitment and career",
+        "emailType": "text",
+        "message": "go check out for jobs and apply",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2688,
+        1072
+      ],
+      "id": "3297c12e-f1e6-44ef-8e8c-b3cf268085b6",
+      "name": "Send a message2",
+      "webhookId": "067fc8b1-a852-4674-89e0-1a6868a71bcf",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "email for me personal",
+        "emailType": "text",
+        "message": "email for bin from family, friends ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2832,
+        -144
+      ],
+      "id": "f86176eb-391f-4226-bcfb-68b45cb4ae62",
+      "name": "Send a message3",
+      "webhookId": "65e2f4a1-3a2d-4f49-9c8f-a07519b33e9d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "=={{ $('clean data').item.json.text }}",
         "categories": {
           "categories": [
             {
-              "category": "jobs"
+              "category": "generic job ads",
+              "description": "any new jobs leads from any source"
             },
             {
-              "category": "spam"
+              "category": "junks,ads,spam/promotions",
+              "description": "spam messages ,junks and ads"
             },
             {
-              "category": "otp"
+              "category": "otp,logins,password change ,register",
+              "description": "all otps,login codes and password reset or register new"
             },
             {
-              "category": "personal"
+              "category": "personal",
+              "description": "my personal emails"
             },
             {
-              "category": "career"
+              "category": "interview",
+              "description": "Interview invitations , Online assessments , Coding rounds ,Technical tests ,HR scheduling rounds"
             },
             {
-              "category": "others"
+              "category": "real recruitment",
+              "description": " messages from any company,college,other source related to job "
+            },
+            {
+              "category": "others ",
+              "description": "email that dont fit in other categories"
             }
           ]
+        },
+        "options": {
+          "systemPromptTemplate": "You are an advanced AI email classifier.\n\nClassify the email into EXACTLY ONE category.\n\nCategories:\n{categories}\n\nCRITICAL PRIORITY RULE:\n\nIf the email contains ANY interview-related content such as:\n- interview\n- interview invitation\n- interview scheduling\n- coding round\n- technical round\n- HR round\n- assessment\n- online test\n- interview timing\n- meeting link\n- Google Meet\n- Zoom\n- Microsoft Teams\n- availability for interview\n- interview confirmation\n\nALWAYS classify the email as:\n\"interview\"\n\nThis rule overrides ALL other categories.\n\nCategory Definitions:\n\n1. generic job ads\n- bulk hiring campaigns\n- LinkedIn/Naukri/Indeed alerts\n- job newsletters\n- mass hiring emails\n- \"Apply Now\" campaigns\n- multiple unrelated job listings\n\n2. junks,ads,spam/promotions\n- advertisements\n- promotions\n- newsletters\n- spam emails\n- sales campaigns\n- marketing emails\n\n3. otp,logins,password change ,register\n- OTPs\n- login alerts\n- password reset\n- account verification\n- registration emails\n- security notifications\n\n4. personal\n- personal communication\n- casual conversations\n- friends/family communication\n\n5. interview\n- interview invitations\n- interview schedules\n- interview timing\n- interview confirmations\n- coding assessments\n- technical rounds\n- HR rounds\n- online tests\n- meeting links\n- interview availability discussions\n\n6. real recruitment\n- recruiter outreach\n- hiring discussions\n- recruiter introducing job opportunity\n- recruiter discussing resume/skills\n- company reaching out for opportunity discussion\n- ONLY when NO interview-related content exists\n\n7. others\n- emails that do not fit any category above\n\nImportant Instructions:\n- Choose ONLY ONE category\n- Prioritize accuracy over guessing\n- Use full email context before deciding\n- If interview-related content exists, ALWAYS choose \"interview\"\n- Never classify interview emails as \"real recruitment\"\n\nReturn ONLY valid JSON.\nDo NOT explain."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
       "position": [
-        1400,
-        30
+        1424,
+        32
       ],
-      "name": "Classifier"
+      "id": "abcad88b-ff7a-4001-9803-c1bc58ab1a63",
+      "name": "Text Classifier1"
     },
     {
       "parameters": {
         "operation": "addLabels",
-        "messageId": "={{ $json.message_id }}"
+        "messageId": "={{ $json.message_id }}",
+        "labelIds": [
+          "Label_540113614505567008"
+        ]
       },
       "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
       "position": [
-        1900,
-        0
+        1984,
+        -352
       ],
-      "name": "Apply Label"
+      "id": "619ad1b2-d019-43e3-880f-cef808318948",
+      "name": "generic job ads",
+      "webhookId": "6af56fc5-95bb-4c2a-88e8-a402f44ddbe8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
+        }
+      }
     },
     {
       "parameters": {
-        "sendTo": "your_email@example.com",
-        "subject": "Important Email Detected",
-        "message": "Check your inbox"
+        "operation": "addLabels",
+        "messageId": "={{ $json.message_id }}",
+        "labelIds": [
+          "Label_4296376000393346564"
+        ]
       },
       "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
       "position": [
-        2100,
-        0
+        1984,
+        -128
       ],
-      "name": "Forward Important Mail",
+      "id": "3dbede5c-c223-480a-9874-7e61da7a0394",
+      "name": "junks,ads,spam/promotions",
+      "webhookId": "ab427425-18be-40be-8564-0221527bf92c",
       "credentials": {
         "gmailOAuth2": {
-          "id": "YOUR_CREDENTIAL_ID",
-          "name": "YOUR_GMAIL_ACCOUNT"
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.message_id }}",
+        "labelIds": [
+          "Label_2542773010631230665"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2016,
+        64
+      ],
+      "id": "bd2139fe-a2e3-4c77-ba56-eabca80f1875",
+      "name": "otp,logins,password change ,register",
+      "webhookId": "3b7f3a8c-16db-4e93-8493-009ee9e89f87",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.message_id }}",
+        "labelIds": [
+          "Label_4143490305532961184"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2208,
+        208
+      ],
+      "id": "cf254f29-e2dd-4af7-b9b5-d3a7e084177f",
+      "name": "personal",
+      "webhookId": "7ed41374-0ca6-46a3-88f4-97bc2649237c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.message_id }}",
+        "labelIds": [
+          "Label_5814641197477440207"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2064,
+        784
+      ],
+      "id": "d9eac518-a1f8-4dab-abc1-571f18c84292",
+      "name": "real recruitment",
+      "webhookId": "62781a69-4fb2-4dc7-b9f0-db02527e63fd",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.message_id }}",
+        "labelIds": [
+          "Label_7135492792792819560"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2176,
+        416
+      ],
+      "id": "b856cc7a-e614-4338-95b3-4bf3e37bdb9a",
+      "name": "interview",
+      "webhookId": "7b9c78fe-8d58-4b61-a77c-b4ce68c3f43f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.message_id }}",
+        "labelIds": [
+          "Label_2797100163495727106"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1824,
+        1072
+      ],
+      "id": "62343ad0-0d51-4ac9-a411-65331ed2138f",
+      "name": "others",
+      "webhookId": "6b112ed4-a0c7-4464-a0b5-3aeefac2318b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2256,
+        1408
+      ],
+      "id": "219ed610-a7c9-4cb5-84a5-cf66a1fee922",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=IMPORTANT:\nYou are writing AS Binayatosh Panigrahi.\nAlways write in FIRST PERSON.\nNever refer to Binayatosh in third person.\nNever use:\n- \"Binayatosh is interested\"\n- \"We appreciate\"\n- \"the candidate\"\n\nAlways use:\n- I\n- my\n- me\n\nGenerate a concise, professional, and natural recruiter reply email.\n\nRules:\n- Sound human and conversational\n- Keep response short\n- Do NOT sound overly excited\n- Do NOT invent details\n- Do NOT use placeholders\n- Do NOT add fake signatures\n- Use natural recruiter conversation tone\n- End with:\nBest regards,\nBinayatosh Panigrahi\n\nRecruiter Email:\n{{ $('clean data').item.json.text }}\n\nReturn ONLY the email body.",
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2176,
+        1216
+      ],
+      "id": "1cdcc0e7-f411-43a4-b8e4-08501310b584",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "=Re: {{ $('Gmail Trigger').item.json.subject }}",
+        "message": "={{ $json.text }}",
+        "options": {
+          "sendTo": "={{ $('Gmail Trigger').item.json.headers.from }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2688,
+        1216
+      ],
+      "id": "f45df894-dd98-4363-8fea-92c9a9fd72a0",
+      "name": "Create a draft",
+      "webhookId": "85eb56d1-7676-4e28-b62e-30d0036693d4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an intelligent personal email assistant.\n\nGenerate a natural and context-aware reply to the email.\n\nRules:\n- Sound human and conversational\n- Reply according to the context of the email\n- If someone asks a question, answer politely\n- If someone greets, greet back warmly\n- If someone shares information, acknowledge naturally\n- Keep replies concise unless detailed response is needed\n- Maintain friendly tone\n- Do not hallucinate facts\n- Do not over-formalize\n\nIncoming Email:\n{{ $('clean data').item.json.text }}\n\nReturn ONLY the email reply body.",
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2784,
+        80
+      ],
+      "id": "0e6619b9-a450-4a2f-8bfc-98440165a007",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2992,
+        256
+      ],
+      "id": "bc004b6e-e2b1-4777-8d2c-7014008b9c11",
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "hello personal message from binayatosh",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        3296,
+        64
+      ],
+      "id": "7f7d2914-f389-46c3-9f20-2adf5d5def5c",
+      "name": "Send a message4",
+      "webhookId": "5a6b6131-4aec-49f9-94cd-4b41576a3ee2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $('Gmail Trigger').item.json.text }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "company",
+              "description": "company name"
+            },
+            {
+              "name": "interview_date",
+              "description": "interview date"
+            },
+            {
+              "name": "interviewer",
+              "description": "interviewer name"
+            },
+            {
+              "name": "interview_mode",
+              "description": "online/offline"
+            },
+            {
+              "name": "meeting_link",
+              "description": "interview meeting link"
+            },
+            {
+              "name": "interview_time",
+              "description": "interview time given"
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "Extract interview scheduling details from the email.\n\nRules:\n-Today's date is 2026-05-26\n- Convert natural language dates into future YYYY-MM-DD format whenever possible\n- Convert time into 24-hour HH:mm format\n- Detect interview-related scheduling information intelligently\n- Extract company name\n- Extract interviewer/recruiter name if available\n- Extract meeting links if available\n- Detect interview mode (online/offline/Google Meet/Zoom/Teams)\n- If a weekday like Friday or Monday is mentioned, infer the next upcoming occurrence\n- If a value is unavailable, return empty string\n- Do not hallucinate missing information\n\nReturn structured values only."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        2768,
+        496
+      ],
+      "id": "62e5023d-12fd-4702-8715-f4fddeff02e0",
+      "name": "Information Extractor1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-flash-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        3104,
+        704
+      ],
+      "id": "b1bae99e-4a71-48aa-bac1-0ac0b4e35a69",
+      "name": "Google Gemini Chat Model4",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "your-calendar-id@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "your-calendar-id@group.calendar.google.com"
+        },
+        "start": "={{ $json.output.interview_date + 'T' + $json.output.interview_time + ':00+05:30' }}",
+        "end": "={{ $json.output.interview_date + 'T19:00:00+05:30' }}",
+        "useDefaultReminders": false,
+        "additionalFields": {
+          "description": "=Interview with {{ $json.output.interviewer }}\n\nMode:\n{{ $json.output.interview_mode }}\n\nMeeting Link:\n{{ $json.output.meeting_link }}\n\nInterviewer:\n{{ $json.output.interviewer }}\n\nDate:\n{{ $json.output.interview_date }}\n\nTime:\n{{ $json.output.interview_time }}"
+        },
+        "remindersUi": {
+          "remindersValues": [
+            {
+              "method": "email",
+              "minutes": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        3216,
+        496
+      ],
+      "id": "0e3ecce6-7781-418d-81eb-f5ffd32d8b5c",
+      "name": "Create an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_YOUR_CREDENTIAL_NAME"
         }
       }
     }
   ],
-  "connections": {},
-  "active": false
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "clean data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clean data": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier1": {
+      "main": [
+        [
+          {
+            "node": "generic job ads",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "junks,ads,spam/promotions",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "otp,logins,password change ,register",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "personal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "interview",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "real recruitment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "others",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "otp,logins,password change ,register": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "real recruitment": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "interview": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "personal": {
+      "main": [
+        [
+          {
+            "node": "Send a message3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Send a message4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor1": {
+      "main": [
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "6d18352a-dab4-4c1c-aad9-e23f398c69e5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "REMOVED"
+  },
+  "id": "BOPdnYCnzqdnSTzI",
+  "tags": []
 }
