@@ -3,6 +3,7 @@
 A collection of real-world AI automation workflows built using n8n, focusing on intelligent orchestration, multi-agent systems, trust verification, and event-driven automation.
 
 ---
+<img width="2560" height="1440" alt="MindBinX_AI_Infographic (1)" src="https://github.com/user-attachments/assets/df4f3be5-efb7-4dbe-8831-40d304b05a6f" />
 
 # 📂 Current Project
 
