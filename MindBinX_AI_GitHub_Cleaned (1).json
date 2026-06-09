@@ -1,0 +1,3001 @@
+{
+  "name": "MindBinX AI",
+  "nodes": [
+    {
+      "parameters": {
+        "text": "={{ $json.headers.from }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "senderName",
+              "description": "Extract the sender's name from this email . if no name , return an empty string."
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value return a empty string."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        -1840,
+        352
+      ],
+      "id": "c729376d-aaa1-4aea-aa3e-043be036d5ba",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b9d5f3bf-4d59-4377-8338-0d01fe79b589",
+              "name": "message_id",
+              "value": "={{ $('Gmail Trigger').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d8bb0540-0d54-4512-b500-431f38d26b4e",
+              "name": "intro",
+              "value": "={{ $json.intro }}",
+              "type": "string"
+            },
+            {
+              "id": "63d45e48-c9d6-4d08-8480-21fb6737586b",
+              "name": "threadId",
+              "value": "={{ $('Gmail Trigger').item.json.threadId }}",
+              "type": "string"
+            },
+            {
+              "id": "3703b393-bd88-4daa-9386-a9b2a1ed9544",
+              "name": "text",
+              "value": "={{ $('Gmail Trigger').item.json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1040,
+        384
+      ],
+      "id": "c2b593b3-4917-4890-8849-05209b5672d9",
+      "name": "clean data"
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "u got a message regarding to jobs ",
+        "emailType": "text",
+        "message": "check it related to job",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        400,
+        16
+      ],
+      "id": "9ac0d1c0-e2f8-4c1f-bfe7-ce66e28f8346",
+      "name": "Send a message",
+      "webhookId": "745ed5f4-9531-4b0a-a174-fb0c8b5d2460",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "message related to interview",
+        "emailType": "text",
+        "message": "=check the messages for interview details :  {{ $json.description }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        7792,
+        864
+      ],
+      "id": "ce4140ed-b4f4-4da8-9598-3b81bcf02d30",
+      "name": "Send a message1",
+      "webhookId": "5ec40c38-b01a-44df-80f0-ec43e98aac4f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "email for me personal",
+        "emailType": "text",
+        "message": "email for bin from family, friends ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        848,
+        208
+      ],
+      "id": "7d66f4a5-7a35-4c98-a38c-a073727907b6",
+      "name": "Send a message3",
+      "webhookId": "65e2f4a1-3a2d-4f49-9c8f-a07519b33e9d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "generic job ads",
+              "description": "any new jobs leads from any source"
+            },
+            {
+              "category": "junks,ads,spam/promotions",
+              "description": "spam messages ,junks and ads"
+            },
+            {
+              "category": "otp,logins,password change ,register",
+              "description": "all otps,login codes and password reset or register new"
+            },
+            {
+              "category": "personal",
+              "description": "my personal emails"
+            },
+            {
+              "category": "interview",
+              "description": "Interview invitations , Online assessments , Coding rounds ,Technical tests ,HR scheduling rounds"
+            },
+            {
+              "category": "real recruitment",
+              "description": " messages from any company,college,other source related to job "
+            },
+            {
+              "category": "others",
+              "description": "email that dont fit in other categories"
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "You are an enterprise email classification engine.\n\nClassify the email into EXACTLY ONE category.\n\nCategories:\n- generic job ads\n- junks,ads,spam/promotions\n- otp,logins,password change ,register\n- personal\n- interview\n- real recruitment\n- others\n\nRules:\n\ngeneric job ads:\n- Indeed job alerts\n- LinkedIn job alerts\n- Naukri alerts\n- Foundit alerts\n- job newsletters\n- multiple job listings\n\ninterview:\n- interview invitation\n- coding round\n- HR round\n- assessment\n- scheduling\n\nreal recruitment:\n- recruiter outreach\n- application acknowledgement\n- profile shortlisted\n- hiring discussion\n- only if interview has not started\n\nReturn ONLY this JSON:\n\n{\n  \"generic job ads\": false,\n  \"junks,ads,spam/promotions\": false,\n  \"otp,logins,password change ,register\": false,\n  \"personal\": false,\n  \"interview\": false,\n  \"real recruitment\": false,\n  \"others\": false\n}\n\nExactly one field must be true.\nAll others must be false.\nNo explanations.\nNo markdown.\nNo text outside JSON."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        -560,
+        384
+      ],
+      "id": "7cbab11c-a201-435a-8b86-f88ed46c752a",
+      "name": "Text Classifier1"
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.message_id }}",
+        "labelIds": [
+          "Label_135442613087013590"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -432,
+        -192
+      ],
+      "id": "3ba7716c-3284-4bfa-976c-67aa579aeab9",
+      "name": "generic job ads",
+      "webhookId": "6af56fc5-95bb-4c2a-88e8-a402f44ddbe8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.message_id }}",
+        "labelIds": [
+          "Label_4389336240221600646"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -304,
+        64
+      ],
+      "id": "ff963ed2-9615-44aa-9bee-e95c0f170a97",
+      "name": "junks,ads,spam/promotions",
+      "webhookId": "ab427425-18be-40be-8564-0221527bf92c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.message_id }}",
+        "labelIds": [
+          "Label_6279408162995244984"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -128,
+        224
+      ],
+      "id": "5ce6f423-b3ff-4d26-b905-ccd726f864e4",
+      "name": "otp,logins,password change ,register",
+      "webhookId": "3b7f3a8c-16db-4e93-8493-009ee9e89f87",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.message_id }}",
+        "labelIds": [
+          "Label_1"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        320
+      ],
+      "id": "bdc07db0-ce7f-4c3d-a341-69d854ea78a2",
+      "name": "personal",
+      "webhookId": "7ed41374-0ca6-46a3-88f4-97bc2649237c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.message_id }}",
+        "labelIds": [
+          "Label_8526813336476408547"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -48,
+        1184
+      ],
+      "id": "f582d5cf-c0ed-4feb-bb48-2a4c564084ba",
+      "name": "real recruitment",
+      "webhookId": "62781a69-4fb2-4dc7-b9f0-db02527e63fd",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.message_id }}",
+        "labelIds": [
+          "Label_5625012105466442882"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        992
+      ],
+      "id": "cb487b8b-9c69-46da-b185-4dbd08164e2b",
+      "name": "interview",
+      "webhookId": "7b9c78fe-8d58-4b61-a77c-b4ce68c3f43f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.message_id }}",
+        "labelIds": [
+          "Label_7552133803071544062"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -128,
+        1648
+      ],
+      "id": "1bee54c8-256f-4122-b3d3-9bf0016de09c",
+      "name": "others",
+      "webhookId": "6b112ed4-a0c7-4464-a0b5-3aeefac2318b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=IMPORTANT:\nYou are writing AS Binayatosh Panigrahi.\nAlways write in FIRST PERSON.\nNever refer to Binayatosh in third person.\nNever use:\n- \"Binayatosh is interested\"\n- \"We appreciate\"\n- \"the candidate\"\n\nAlways use:\n- I\n- my\n- me\n\nGenerate a concise, professional, and natural recruiter reply email.\n\nRules:\n- Sound human and conversational\n- Keep response short\n- Do NOT sound overly excited\n- Do NOT invent details\n- Do NOT use placeholders\n- Do NOT add fake signatures\n- Use natural recruiter conversation tone\n- End with:\nBest regards,\nBinayatosh Panigrahi\n\nRecruiter Email:\n{{ $('clean data').item.json.text }}\n\nReturn ONLY the email body.",
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        6608,
+        1408
+      ],
+      "id": "5de23998-69ae-4061-89bc-3c88d80bd72a",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "=Re: {{ $('Gmail Trigger').item.json.subject }}",
+        "message": "={{ $json.text }}",
+        "options": {
+          "sendTo": "={{ $('Gmail Trigger').item.json.headers.from }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        7088,
+        1392
+      ],
+      "id": "7d140ca9-5722-4040-a93e-fc22b914160e",
+      "name": "Create a draft",
+      "webhookId": "85eb56d1-7676-4e28-b62e-30d0036693d4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an intelligent personal email assistant.\n\nGenerate a natural and context-aware reply to the email.\n\nRules:\n- Sound human and conversational\n- Reply according to the context of the email\n- If someone asks a question, answer politely\n- If someone greets, greet back warmly\n- If someone shares information, acknowledge naturally\n- Keep replies concise unless detailed response is needed\n- Maintain friendly tone\n- Do not hallucinate facts\n- Do not over-formalize\n\nIncoming Email:\n{{ $('clean data').item.json.text }}\n\nReturn ONLY the email reply body.",
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        800,
+        432
+      ],
+      "id": "0ed66fa7-2395-4efa-948d-9ea814a92e1d",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1072,
+        560
+      ],
+      "id": "f459fe4f-6eb2-4965-bef9-5582e2d0c432",
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "hello personal message from binayatosh",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1312,
+        416
+      ],
+      "id": "d3f46e34-d847-4fc4-94a7-f6b405ca141b",
+      "name": "Send a message4",
+      "webhookId": "5a6b6131-4aec-49f9-94cd-4b41576a3ee2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $('Gmail Trigger').item.json.text }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "company",
+              "description": "company name"
+            },
+            {
+              "name": "interview_date",
+              "description": "interview date"
+            },
+            {
+              "name": "interviewer",
+              "description": "interviewer name"
+            },
+            {
+              "name": "interview_mode",
+              "description": "online/offline"
+            },
+            {
+              "name": "meeting_link",
+              "description": "interview meeting link"
+            },
+            {
+              "name": "interview_time",
+              "description": "interview time given"
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "Extract interview scheduling details from the email.\n\nRules:\n\n* Today's date is 2026-05-26\n* Convert natural language dates into future YYYY-MM-DD format whenever possible\n* Convert time into 24-hour HH:mm:ss format\n* Detect interview-related scheduling information intelligently\n* Extract company name\n* Extract interviewer or recruiter name if available\n* Extract meeting links if available\n* Detect interview mode (Google Meet, Zoom, Microsoft Teams, Online, Offline)\n* If a weekday such as Monday or Friday is mentioned, infer the next upcoming occurrence\n* If a value is unavailable, return an empty string\n* Do not hallucinate or invent information\n\nReturn only the following fields:\n\n* company\n* interview_date\n* interviewer\n* interview_mode\n* meeting_link\n* interview_time\n\nOutput Requirements:\n\n* Return ONLY a valid JSON object\n* Do NOT use markdown\n* Do NOT wrap the output in code fences\n* Do NOT add explanations\n* Do NOT add notes\n* Do NOT add text before or after the JSON\n* The response must start with { and end with }\n\nExample:\n\n{\n\"company\": \"Example Corp\",\n\"interview_date\": \"2026-06-15\",\n\"interviewer\": \"John Smith\",\n\"interview_mode\": \"Google Meet\",\n\"meeting_link\": \"https://meet.google.com/abc-defg-hij\",\n\"interview_time\": \"14:30:00\"\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        6848,
+        768
+      ],
+      "id": "d1a3dc7f-40ed-40a1-a208-0928f2dda494",
+      "name": "Information Extractor1"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "your-email@example.com",
+          "mode": "list",
+          "cachedResultName": "your-email@example.com"
+        },
+        "start": "={{ $json.output.interview_date + 'T' + $json.output.interview_time + '+05:30' }}",
+        "end": "={{ $json.output.interview_date + 'T19:00:00+05:30' }}",
+        "useDefaultReminders": false,
+        "additionalFields": {
+          "description": "=Interview with {{ $json.output.interviewer }}\n\nMode:\n{{ $json.output.interview_mode }}\n\nMeeting Link:\n{{ $json.output.meeting_link }}\n\nInterviewer:\n{{ $json.output.interviewer }}\n\nDate:\n{{ $json.output.interview_date }}\n\nTime:\n{{ $json.output.interview_time }}"
+        },
+        "remindersUi": {
+          "remindersValues": [
+            {
+              "method": "email",
+              "minutes": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        7488,
+        800
+      ],
+      "id": "c84564f7-dd2b-4595-ba30-f8b5eba3947b",
+      "name": "Create an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        304,
+        976
+      ],
+      "id": "7119dc24-b9dd-4d47-8b19-25aed03263c0",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "pythonNative",
+        "pythonCode": "data = _item[\"json\"]\n\ndata[\"trust_score\"] = 0\n\nreturn {\n    \"json\": data\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        992
+      ],
+      "id": "a9785206-b583-48cf-a81c-b61c23d11b4c",
+      "name": "Initialize Score"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{$json.id}}",
+        "simple": false,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        112,
+        816
+      ],
+      "id": "c052becd-b446-4812-be1e-7890cad75a04",
+      "name": "Get a message",
+      "webhookId": "89fd1ff9-3769-45e1-a453-a58168c73f57",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{$json.id}}",
+        "simple": false,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        1184
+      ],
+      "id": "03b56fcd-5094-4c84-91d0-da24e880ccbc",
+      "name": "Get a message1",
+      "webhookId": "89fd1ff9-3769-45e1-a453-a58168c73f57",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "item = _items[0]\n\ndata = item[\"json\"]\n\nheaders = data.get(\"headers\", {})\n\nheader_text = str(headers).lower()\n\nspf = \"spf=pass\" in header_text\ndkim = \"dkim=pass\" in header_text\ndmarc = \"dmarc=pass\" in header_text\n\nscore = data.get(\"trust_score\", 0)\n\nreasons = []\n\nif spf:\n    score += 5\n    reasons.append(\"SPF Passed\")\n\nif dkim:\n    score += 5\n    reasons.append(\"DKIM Passed\")\n\nif dmarc:\n    score += 5\n    reasons.append(\"DMARC Passed\")\n\ndata[\"spf\"] = spf\ndata[\"dkim\"] = dkim\ndata[\"dmarc\"] = dmarc\n\ndata[\"authentication_reasons\"] = reasons\ndata[\"trust_score\"] = score\n\nreturn item"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        992
+      ],
+      "id": "c3966bd1-d3c7-407f-917c-7ada4fca3c69",
+      "name": "SPF / DKIM / DMARC Validation"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "pythonNative",
+        "pythonCode": "data = _item[\"json\"]\n\nsender = data[\"from\"][\"value\"][0][\"address\"]\n\ndomain = sender.split(\"@\")[1].lower()\n\ndata[\"sender_email\"] = sender\ndata[\"domain\"] = domain\n\nreturn {\n    \"json\": data\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        992
+      ],
+      "id": "2d1229d6-bdbe-4bd7-a1ce-421c1b20b0c0",
+      "name": "Extract Sender Information"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "c78d1c16-3471-4c10-b609-3c8917fd122a",
+                    "leftValue": "={{ $json.trust_level }}",
+                    "rightValue": "trusted",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "cec9ad74-3511-4004-8003-287b1cf4bd39",
+                    "leftValue": "={{ $json.trust_level }}",
+                    "rightValue": "medium",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "e48183b7-12e6-4730-ad59-5b5467241b95",
+                    "leftValue": "={{ $json.trust_level }}",
+                    "rightValue": "suspicious",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "allMatchingOutputs": true
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        5984,
+        1488
+      ],
+      "id": "81f059c1-111b-4d0e-b77c-d7623a206c21",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "interview",
+              "type": "boolean",
+              "description": "true if interview invitation, assessment, coding round, HR round, technical round or scheduling exists"
+            },
+            {
+              "name": "personalized",
+              "type": "boolean",
+              "description": "true if email is clearly addressed specifically to recipient"
+            },
+            {
+              "name": "spam",
+              "type": "boolean",
+              "description": "true if suspicious, scam, phishing, promotion or mass hiring"
+            },
+            {
+              "name": "company_name",
+              "description": "company name if present"
+            },
+            {
+              "name": "recruiter_name",
+              "description": "recruiter name if present"
+            },
+            {
+              "name": "company_website",
+              "description": "Company's official website URL"
+            },
+            {
+              "name": "job_title",
+              "description": "Role being offered"
+            },
+            {
+              "name": "meeting_link",
+              "description": "Zoom/Meet/Teams link"
+            },
+            {
+              "name": "meeting_platform",
+              "description": "Platform name"
+            },
+            {
+              "name": "salary_mentioned",
+              "type": "boolean",
+              "description": "check if any salary is mentioned"
+            },
+            {
+              "name": "upfront_payment",
+              "type": "boolean",
+              "description": "check if it is asking for any  upfront payment"
+            },
+            {
+              "name": "training_fee",
+              "type": "boolean",
+              "description": "check it is asking for any training fees"
+            },
+            {
+              "name": "bond_required",
+              "type": "boolean",
+              "description": "check it is asking for any bond to sign "
+            },
+            {
+              "name": "relocation_fee",
+              "type": "boolean",
+              "description": "check for  any relocation fee"
+            },
+            {
+              "name": "visa_fee",
+              "type": "boolean",
+              "description": "check for any visa  fee"
+            },
+            {
+              "name": "equipment_purchase",
+              "type": "boolean",
+              "description": "check for  any equipment purchase"
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "You are an AI Recruitment Trust Analyzer.\n\nAnalyze the email and extract recruitment-related information.\nReturn ONLY valid JSON.\n\nDo not use markdown.\n\nDo not use ```json.\n\nDo not use ```.\n\nDo not explain.\n\nDo not add text before or after the JSON.\n\nEvery boolean field must be true or false.\n\nEvery string field must be a string.\n\nNever return null.\n\nThe first character must be {\n\nThe last character must be }\n\nRules:\n\n* interview = true only for interview invitations, assessments, coding rounds, HR rounds, technical rounds, scheduling emails, or meeting links.\n* personalized = true only when addressed specifically to the candidate.\n* spam = true only for phishing, scams, fraudulent recruitment, suspicious payments, or malicious links.\n\nExtract:\n\n* company_name\n* recruiter_name\n* company_website\n* job_title\n* meeting_link\n* meeting_platform\n* salary_mentioned\n* upfront_payment\n* training_fee\n* bond_required\n* relocation_fee\n* visa_fee\n* equipment_purchase\n\nIf information is unavailable:\n\n* String \u2192 \"\"\n* Boolean \u2192 false\n\nBe conservative.\nNever infer information that is not explicitly present.\n\nReturn all fields defined in the schema.\nCRITICAL OUTPUT RULES\n\nReturn ONLY a valid JSON object.\n\n\nString fields:\nReturn \"\" when unavailable.\n\nBoolean fields:\nReturn false when unavailable.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        1728,
+        704
+      ],
+      "id": "0d27e1ba-f1f8-4442-a024-2ac166f23f8a",
+      "name": "Gemini Structured Output"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "item = _items[0]\ndata = item[\"json\"]\n\nscore = data.get(\"trust_score\", 0)\n\nif score >= 70:\n    trust = \"trusted\"\nelif score >= 40:\n    trust = \"medium\"\nelse:\n    trust = \"suspicious\"\n\ndata[\"trust_level\"] = trust\n\nreturn item"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4992,
+        1424
+      ],
+      "id": "090b5bea-0dc6-4f69-b112-1e445e8cc812",
+      "name": "Final Trust Level"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "item = _items[0]\n\ndata = item[\"json\"]\n\nscore = data.get(\"trust_score\", 0)\n\noutput = data.get(\"output\", {})\n\n# AI signals\n\nif output.get(\"interview\", False):\n    score += 20\n\nif output.get(\"personalized\", False):\n    score += 10\n\nif output.get(\"spam\", False):\n    score -= 40\n\ndata[\"trust_score\"] = score\n\nreturn item"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4768,
+        1408
+      ],
+      "id": "4b715ec2-2e40-4073-b5cc-ac9ff9bdc7ef",
+      "name": "AI Trust Scoring"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8f6bb4fb-a981-4906-980a-a96d27041af7",
+              "leftValue": "={{$json.output.interview}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        6176,
+        1280
+      ],
+      "id": "2a3785de-bc55-4347-a0ae-60ead56edaaf",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "Medium Trust Recruitment Email",
+        "message": "=Trust Score: {{$json.trust_score}}  Please review manually.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        6288,
+        1504
+      ],
+      "id": "862ca62f-f2a2-4609-92d4-3f6530197182",
+      "name": "Medium Trust Branch",
+      "webhookId": "a9106c7d-4533-4cc8-a49e-681936b734b6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "labelIds": [
+          "Label_4389336240221600646"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        6160,
+        1936
+      ],
+      "id": "63d8e92c-9b57-4d9f-b7ab-6de484daf661",
+      "name": "Add label to message",
+      "webhookId": "d5d1563a-1692-4cc5-af4c-2b089f23797c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "Suspicious Recruitment Email",
+        "message": "=Trust Score:{{ $('Edit Fields2').item.json.trust_score }}   Domain: {{ $('Edit Fields2').item.json.domain }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        6544,
+        1952
+      ],
+      "id": "892d445c-2285-4086-988a-407801d4d37d",
+      "name": "Send a message5",
+      "webhookId": "0edf3c49-1ea8-4f26-ab21-e1c1b6ab43af",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1936,
+        1296
+      ],
+      "id": "49eaf9bd-bdd5-4f32-bb2e-7a5437992c27",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f522889e-bcfa-4794-b021-8e3cc8c10f4a",
+              "name": "=message_id",
+              "value": "={{ $('Gmail Trigger').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "2ff7bb9f-597b-4426-985e-2caae0f2dc9b",
+              "name": "trust_level",
+              "value": "={{ $json.trust_level }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5856,
+        1776
+      ],
+      "id": "7c9eb7a1-182a-48f0-9b93-df349ecbd407",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "url": "={{ \"https://\" + $json.domain }}",
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text",
+              "outputPropertyName": "website_response"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        848,
+        768
+      ],
+      "id": "02fa0c1a-d50c-4d5d-a03b-284a70d34255",
+      "name": "Company Website Check",
+      "retryOnFail": false,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "item = _items[0]\n\ndata = item[\"json\"]\n\nscore = data.get(\"trust_score\", 0)\n\nwebsite_html = str(data.get(\"website_response\", \"\"))\n\nif len(website_html) > 100:\n    data[\"website_exists\"] = True\n    score += 15\nelse:\n    data[\"website_exists\"] = False\n\ndata[\"trust_score\"] = score\n\nreturn item\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1072,
+        992
+      ],
+      "id": "ab90f1e2-8436-4b06-af59-188fff224433",
+      "name": "Website Verification Score"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "item = _items[0]\n\ndata = item[\"json\"]\n\nscore = data.get(\"trust_score\", 0)\n\noutput = data.get(\"output\", {})\n\n# Company identified\n\nif output.get(\"company_name\"):\n    score += 5\n\n# Recruiter identified\n\nif output.get(\"recruiter_name\"):\n    score += 5\n\n\n\n# Job role identified\n\nif output.get(\"job_title\"):\n    score += 5\n\n# Meeting link provided\n\nif output.get(\"meeting_link\"):\n    score += 5\n\n# Meeting platform identified\n\nif output.get(\"meeting_platform\"):\n    score += 5\n\ndata[\"trust_score\"] = score\n\nreturn item"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4528,
+        1424
+      ],
+      "id": "87d6f7eb-4efe-4e2b-bda7-995c029bb27a",
+      "name": "Company Intelligence Score"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        880,
+        992
+      ],
+      "id": "f2f1f571-276e-430f-b8bd-ef90cc3d8f89",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5a3d5255-841e-4348-9165-79d598620bc1",
+              "name": "start_test",
+              "value": "={{ $json.output.interview_date + 'T' + $json.output.interview_time + ':00+05:30' }}",
+              "type": "string"
+            },
+            {
+              "id": "6921b8af-7f0e-4d47-a7ce-f6902b8541f2",
+              "name": "end_test",
+              "value": "={{ $json.output.interview_date + 'T19:00:00+05:30' }}",
+              "type": "string"
+            },
+            {
+              "id": "8eb253c7-4e71-4838-9d3b-4c6a29050957",
+              "name": "date",
+              "value": "={{ $json.output.interview_date }}",
+              "type": "string"
+            },
+            {
+              "id": "fd9c3df5-aae3-4032-b1e3-bc3a656cb1d2",
+              "name": "time",
+              "value": "={{ $json.output.interview_time }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        7200,
+        768
+      ],
+      "id": "7a46d728-eeba-4554-8c15-415bc6217bd7",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "\n\nitem = _items[0]\n\ndata = item[\"json\"]\n\nscore = data.get(\"trust_score\", 0)\n\ntry:\n\n    whois_data = data[\"data\"]\n\n    \n\n    whois = json.loads(whois_data)\n\n    creation_timestamp = whois.get(\"creation_date\")\n\n    creation_date = datetime.fromtimestamp(\n        creation_timestamp\n    )\n\n    today = datetime.now()\n\n    age_years = (\n        today - creation_date\n    ).days / 365\n\nexcept:\n\n    age_years = 0\n\ndata[\"domain_age_years\"] = round(age_years, 2)\n\nif age_years >= 10:\n\n    score += 25\n\nelif age_years >= 5:\n\n    score += 15\n\nelif age_years >= 1:\n\n    score += 5\n\nelse:\n\n    score -= 25\n\ndata[\"trust_score\"] = score\n\nreturn item"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5392,
+        624
+      ],
+      "id": "d1b87f89-23e0-4655-a8bf-49ebbfbc93f5",
+      "name": "Extract Domain Age"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "item = _items[0]\n\ndata = item[\"json\"]\n\n# Prefer website extracted by AI\nwebsite = data.get(\"output\", {}).get(\"company_website\", \"\")\n\nofficial_domain = \"\"\n\nif website:\n\n    website = (\n        website.replace(\"https://\", \"\")\n               .replace(\"http://\", \"\")\n               .split(\"/\")[0]\n               .lower()\n    )\n\n    official_domain = website\n\ndata[\"official_domain\"] = official_domain\n\nreturn item"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3056,
+        1040
+      ],
+      "id": "dd7d63ed-d88a-4b90-b8db-5b93cce0b00c",
+      "name": "Official Domain Extract"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3392,
+        608
+      ],
+      "id": "c8a4fff0-f712-46c2-8950-9a04f38d1d81",
+      "name": "Merge Official Domain"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "item = _items[0]\n\ndata = item[\"json\"]\n\nscore = data.get(\"trust_score\", 0)\n\nsender_domain = data.get(\"domain\", \"\").lower().strip()\nofficial_domain = data.get(\"official_domain\", \"\").lower().strip()\n\ndomain_match = (\n    sender_domain != \"\"\n    and official_domain != \"\"\n    and sender_domain == official_domain\n)\n\nif domain_match:\n    score += 30\n    data[\"domain_match_status\"] = \"exact_match\"\n\nelif official_domain:\n    score += 5\n    data[\"domain_match_status\"] = \"company_found_no_match\"\n\nelse:\n    score -= 10\n    data[\"domain_match_status\"] = \"company_not_found\"\n\ndata[\"domain_match\"] = domain_match\ndata[\"trust_score\"] = score\n\nreturn item"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3568,
+        912
+      ],
+      "id": "dc57243a-cba8-4e93-9f25-88ebe8d00222",
+      "name": "Domain Match Score"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        4848,
+        560
+      ],
+      "id": "5b3d5e4c-0e28-4fbb-8f07-3002baaf5d75",
+      "name": "Merge4"
+    },
+    {
+      "parameters": {
+        "url": "https://api.api-ninjas.com/v1/whois",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "domain",
+              "value": "={{$json.whois_domain}}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "REPLACE_WITH_API_NINJAS_KEY"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        5216,
+        80
+      ],
+      "id": "6b2d873b-17ad-4e99-8638-d240b11c6218",
+      "name": "Domain Age Lookup"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "item = _items[0]\n\ndata = item[\"json\"]\n\nscore = data.get(\"trust_score\", 0)\n\noutput = data.get(\"output\", {})\n\nrisk_score = 0\n\nif output.get(\"upfront_payment\", False):\n    risk_score += 50\n\nif output.get(\"training_fee\", False):\n    risk_score += 50\n\nif output.get(\"relocation_fee\", False):\n    risk_score += 40\n\nif output.get(\"visa_fee\", False):\n    risk_score += 40\n\nif output.get(\"equipment_purchase\", False):\n    risk_score += 30\n\nif output.get(\"bond_required\", False):\n    risk_score += 20\n\nscore -= risk_score\n\ndata[\"fraud_risk_score\"] = risk_score\ndata[\"trust_score\"] = score\n\nreturn item"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2096,
+        320
+      ],
+      "id": "ae2a79d9-4007-4031-8834-75d12f4a7864",
+      "name": "Fraud Risk Score"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -2144,
+        352
+      ],
+      "id": "4ff264ed-798d-41fc-8c82-49ab8abbd5bb",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "item = _items[0]\n\ndata = item[\"json\"]\n\nscore = data.get(\"trust_score\", 0)\n\nsender_domain = data.get(\"domain\", \"\").lower()\n\npersonal_domains = [\n    \"gmail.com\",\n    \"yahoo.com\",\n    \"hotmail.com\",\n    \"outlook.com\"\n]\n\nis_personal = sender_domain in personal_domains\n\ndata[\"personal_email_sender\"] = is_personal\n\nif is_personal:\n    score -= 20\n\ndata[\"trust_score\"] = score\n\nreturn item"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2688,
+        320
+      ],
+      "id": "8a26ece6-11c7-4ee4-bdbd-6573b8b0dcd5",
+      "name": "Personal Domain Check"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6972387d-2ab7-4a8b-ad6c-094ca7cd8efb",
+              "leftValue": "={{$json.personal_email_sender}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2928,
+        288
+      ],
+      "id": "9dc99a51-e05d-4450-bad2-48be3117b08e",
+      "name": "Personal Email?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a574892c-0f55-4a89-966a-0f1dbd7c559c",
+              "name": "trust_level",
+              "value": "suspicious",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3200,
+        272
+      ],
+      "id": "7208550a-8b93-44bd-bb01-7173df07c673",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "suspicious message",
+        "message": "suspicious message be carefull",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        3360,
+        32
+      ],
+      "id": "336ca625-3ec8-4a0d-a7a3-b46375b3e159",
+      "name": "Send a message2",
+      "webhookId": "4cf7ce92-8233-4796-be8b-a2cd43026ff0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{$json.output.company_name || \"unknown\"}}"
+            },
+            {
+              "name": "engine",
+              "value": "google"
+            },
+            {
+              "name": "api_key",
+              "value": "REPLACE_WITH_SERPAPI_KEY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2432,
+        816
+      ],
+      "id": "6b008924-e99e-472b-97c7-0f00004f19a2",
+      "name": "Google Company Search"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "item = _items[0]\n\ndata = item[\"json\"]\n\ndata[\"whois_domain\"] = data.get(\n    \"official_domain\",\n    \"\"\n)\n\nreturn item"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4016,
+        416
+      ],
+      "id": "2e3410af-cbad-40aa-85a1-155e3771b1eb",
+      "name": "Prepare WHOIS Domain"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "item = _items[0]\n\ndata = item[\"json\"]\n\nscore = data.get(\"trust_score\", 0)\n\nresults = data.get(\"organic_results\", [])\n\nif len(results) > 0:\n    score += 15\n    data[\"company_exists\"] = True\nelse:\n    score -= 15\n    data[\"company_exists\"] = False\n\ndata[\"trust_score\"] = score\n\nreturn item"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2752,
+        720
+      ],
+      "id": "1f533959-da21-404f-a7ee-5ef6e4e0ab39",
+      "name": "Company Exists Score"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "item = _items[0]\n\ndata = item[\"json\"]\n\noutput = data.get(\"output\", {})\n\ndata[\"audit_timestamp\"] = str(data.get(\"date\", \"\"))\n\ndata[\"audit_company\"] = output.get(\"company_name\", \"\")\ndata[\"audit_recruiter\"] = output.get(\"recruiter_name\", \"\")\n\ndata[\"audit_sender\"] = data.get(\"sender_email\", \"\")\ndata[\"audit_domain\"] = data.get(\"domain\", \"\")\n\ndata[\"audit_trust_score\"] = data.get(\"trust_score\", 0)\ndata[\"audit_trust_level\"] = data.get(\"trust_level\", \"\")\n\ndata[\"audit_domain_match\"] = data.get(\"domain_match\", False)\ndata[\"audit_domain_age\"] = data.get(\"domain_age_years\", 0)\n\ndata[\"audit_fraud_score\"] = data.get(\"fraud_risk_score\", 0)\n\ndata[\"audit_interview\"] = output.get(\"interview\", False)\ndata[\"audit_personalized\"] = output.get(\"personalized\", False)\ndata[\"audit_spam\"] = output.get(\"spam\", False)\n\nreturn item"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5200,
+        1424
+      ],
+      "id": "2d40096b-623c-4890-83f1-88b18ad03fd3",
+      "name": "Build Audit Record"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        -1920,
+        560
+      ],
+      "id": "aa397e18-83c9-4971-8ca5-60edc7412e8f",
+      "name": "Ollama Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        1664,
+        912
+      ],
+      "id": "0deefaac-8a23-442a-b505-ff4b1cef751f",
+      "name": "Ollama Model2",
+      "credentials": {
+        "ollamaApi": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        6992,
+        1168
+      ],
+      "id": "6c3ec6bb-4203-4f31-b52f-8bedc489c849",
+      "name": "Ollama Model3",
+      "credentials": {
+        "ollamaApi": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        6544,
+        1616
+      ],
+      "id": "08c1213b-3b3e-45a8-b21d-e5c553191446",
+      "name": "Ollama Model4",
+      "credentials": {
+        "ollamaApi": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "item = _items[0]\ndata = item[\"json\"]\n\nfrom_field = data.get(\"From\", \"\")\n\nif \"<\" in from_field:\n    sender_name = from_field.split(\"<\")[0].strip()\n    data[\"intro\"] = f\"Dear {sender_name},\"\nelse:\n    data[\"intro\"] = \"Hello,\"\n\nreturn item"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1488,
+        352
+      ],
+      "id": "3f207edc-07b4-419b-a230-22a38633cde0",
+      "name": "Code in Python"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "be32900c-0e66-40be-92dd-458036c42d41",
+              "leftValue": "={{ $json.whois_domain }}",
+              "rightValue": ".com",
+              "operator": {
+                "type": "string",
+                "operation": "endsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        4352,
+        336
+      ],
+      "id": "bf6942a1-7543-4dfb-a123-ff67344353fb",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "item = _items[0]\ndata = item[\"json\"]\n\n# Skip WHOIS lookup\ndata[\"domain_age_years\"] = 0\ndata[\"domain_age_score\"] = 0\ndata[\"domain_age_skipped\"] = True\n\n# Optional: mark reason\ndata[\"domain_age_reason\"] = \"Non-.com domain\"\n\nreturn item"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4592,
+        432
+      ],
+      "id": "c680d83f-26fd-40f2-8dfd-fdb7b2d75f43",
+      "name": ".com Check IF node"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9b84493b-0886-40f2-ab1e-f87efbeffddc",
+              "leftValue": "={{ $json.output.company_website }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2176,
+        768
+      ],
+      "id": "86fc99f8-a0b2-44ce-ba91-0e0d18540ec0",
+      "name": "Website Present?"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "item = _items[0]\n\ndata = item[\"json\"]\n\nwebsite = data.get(\"output\", {}).get(\n    \"company_website\",\n    \"\"\n)\n\ndomain = \"\"\n\nif website:\n\n    domain = (\n        website\n        .replace(\"https://\", \"\")\n        .replace(\"http://\", \"\")\n        .replace(\"www.\", \"\")\n        .split(\"/\")[0]\n        .lower()\n    )\n\ndata[\"official_domain\"] = domain\ndata[\"skip_google_search\"] = True\n\nreturn item"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2560,
+        576
+      ],
+      "id": "9b16523b-0b56-4e86-b003-b5a1b9b224da",
+      "name": "Extract Domain From Website"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bf528d46-4902-46e0-8cc7-fed08e095a7e",
+              "name": "official_domain",
+              "value": "={{ $json.official_domain }}",
+              "type": "string"
+            },
+            {
+              "id": "d9f0f454-5e55-47d4-b9c0-a3db69f8f559",
+              "name": "skip_google_search",
+              "value": true,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2832,
+        576
+      ],
+      "id": "e2c3d4c0-5c4e-4748-a1b6-b9df2b9801f2",
+      "name": "Skip Search Result"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3136,
+        576
+      ],
+      "id": "bf469907-197a-46ca-887d-cc810b8179c2",
+      "name": "Merge Official Domain Sources"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        752
+      ],
+      "id": "19b9fdbf-63c5-4bf9-a66b-db2f94299db1",
+      "name": "Ollama Model1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3bc373b5-b9b6-4160-834e-739049d9855c",
+              "leftValue": "={{ $json.output.company_name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2160,
+        1008
+      ],
+      "id": "e2928910-7e22-4259-adef-a6aa8706281d",
+      "name": "Company Name Exists?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2299b292-03a7-4e07-959a-a2c17d5381e1",
+              "name": "company_exists",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "84a6838c-5fd1-43af-a6a6-b1c419fa172e",
+              "name": "official_domain",
+              "value": "\"\"",
+              "type": "string"
+            },
+            {
+              "id": "b3317288-bec5-431e-b47e-ba9882db0c0e",
+              "name": "google_search_skipped",
+              "value": true,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2576,
+        1008
+      ],
+      "id": "2012190f-b1b9-449a-b11c-3be53a8bf97c",
+      "name": "Skip Search Result1"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "output = []\n\nfor item in _items:\n    result = item[\"json\"].get(\"organic_results\", [])\n\n    first = result[0] if result else {}\n\n    link = first.get(\"link\", \"\")\n\n    official_domain = (\n        link.replace(\"https://\", \"\")\n            .replace(\"http://\", \"\")\n            .replace(\"www.\", \"\")\n            .split(\"/\")[0]\n        if link else \"\"\n    )\n\n    output.append({\n        \"json\": {\n            \"company_name\": first.get(\"title\", \"\"),\n            \"official_domain\": official_domain,\n            \"official_url\": link\n        }\n    })\n\nreturn output"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2592,
+        816
+      ],
+      "id": "1a67260e-f2f6-446c-b988-2504673e7bc0",
+      "name": "Code in Python1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "list",
+          "cachedResultName": "MindBinX Audit log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 816350235,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit#gid=816350235"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "trust_score",
+              "displayName": "trust_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fraud_risk_score",
+              "displayName": "fraud_risk_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company_name",
+              "displayName": "company_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "official_domain",
+              "displayName": "official_domain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "official_url",
+              "displayName": "official_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company_exists",
+              "displayName": "company_exists",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "job_title",
+              "displayName": "job_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "recruiter_name",
+              "displayName": "recruiter_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company_website",
+              "displayName": "company_website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "meeting_link",
+              "displayName": "meeting_link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "meeting_platform",
+              "displayName": "meeting_platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "salary_mentioned",
+              "displayName": "salary_mentioned",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "upfront_payment",
+              "displayName": "upfront_payment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "training_fee",
+              "displayName": "training_fee",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "bond_required",
+              "displayName": "bond_required",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "relocation_fee",
+              "displayName": "relocation_fee",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "visa_fee",
+              "displayName": "visa_fee",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "equipment_purchase",
+              "displayName": "equipment_purchase",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "personal_email_sender",
+              "displayName": "personal_email_sender",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "trust_level",
+              "displayName": "trust_level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        5312,
+        1696
+      ],
+      "id": "79b9bc2d-1588-49b1-9ece-a3889752de0d",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3db1ec1f-bdd2-4ed3-b156-948b8994426b",
+              "name": "category",
+              "value": "={{$json.category || \"\"}}",
+              "type": "string"
+            },
+            {
+              "id": "d8f731f7-2024-4b51-afde-cde37c2c4ffc",
+              "name": "=trust_score",
+              "value": "={{$json.trust_score || 0}}",
+              "type": "string"
+            },
+            {
+              "id": "6ccc3498-be72-4fbf-b9ea-6a6fd2ace475",
+              "name": "fraud_risk_score",
+              "value": "={{$json.fraud_risk_score || 0}}",
+              "type": "string"
+            },
+            {
+              "id": "09ec5570-48fe-40d5-b8a7-9a2df7ff417c",
+              "name": "company_name",
+              "value": "={{$json.output?.company_name || $json.company_name || \"\"}}",
+              "type": "string"
+            },
+            {
+              "id": "16b07da6-9aef-4ebb-b4ac-12e426c214d6",
+              "name": "official_domain",
+              "value": "={{$json.official_domain || \"\"}}",
+              "type": "string"
+            },
+            {
+              "id": "508c9664-4193-4904-99ed-d45e333eef0d",
+              "name": "official_url",
+              "value": "={{$json.official_url || \"\"}}",
+              "type": "string"
+            },
+            {
+              "id": "d7342bb9-6356-4849-a650-7e892d8e2889",
+              "name": "company_exists",
+              "value": "={{$json.company_exists || false}}",
+              "type": "string"
+            },
+            {
+              "id": "30d3a47a-b3ed-4791-94a6-d93ef881b89e",
+              "name": "job_title",
+              "value": "={{$json.output?.job_title || \"\"}}",
+              "type": "string"
+            },
+            {
+              "id": "1e51752f-e8aa-47d0-904e-73bb7c3480ad",
+              "name": "recruiter_name",
+              "value": "={{$json.output?.recruiter_name || \"\"}}",
+              "type": "string"
+            },
+            {
+              "id": "d0cedcc4-4d5b-43d6-ae8c-a0476289d26a",
+              "name": "company_website",
+              "value": "={{$json.output?.company_website || \"\"}}",
+              "type": "string"
+            },
+            {
+              "id": "38f52d50-23ef-4231-9d1b-a92683466765",
+              "name": "meeting_link",
+              "value": "={{$json.output?.meeting_link || \"\"}}",
+              "type": "string"
+            },
+            {
+              "id": "b84d1efe-578f-41e2-9277-1875d6782593",
+              "name": "meeting_platform",
+              "value": "={{$json.output?.meeting_platform || \"\"}}",
+              "type": "string"
+            },
+            {
+              "id": "c8114c28-78b2-4330-ad60-b9dd878e8e8d",
+              "name": "salary_mentioned",
+              "value": "={{$json.output?.salary_mentioned || false}}",
+              "type": "string"
+            },
+            {
+              "id": "8514e799-ca5b-4f59-bca1-23e59418d0a4",
+              "name": "upfront_payment",
+              "value": "={{$json.output?.upfront_payment || false}}",
+              "type": "string"
+            },
+            {
+              "id": "c5e84a89-d76b-4ce1-9dc1-b37788a16e43",
+              "name": "training_fee",
+              "value": "={{$json.output?.training_fee || false}}",
+              "type": "string"
+            },
+            {
+              "id": "d62205e9-b801-4771-ad12-e8d2a1abcc0b",
+              "name": "=bond_required",
+              "value": "={{$json.output?.bond_required || false}}",
+              "type": "string"
+            },
+            {
+              "id": "fdb580ca-5a60-49c9-a982-37d1707ac035",
+              "name": "relocation_fee",
+              "value": "={{$json.output?.relocation_fee || false}}",
+              "type": "string"
+            },
+            {
+              "id": "5a18d523-fbbb-439c-a915-f02858dedda4",
+              "name": "visa_fee",
+              "value": "={{$json.output?.visa_fee || false}}",
+              "type": "string"
+            },
+            {
+              "id": "05e5840e-967e-4af4-84a6-192653026da2",
+              "name": "equipment_purchase",
+              "value": "={{$json.output?.equipment_purchase || false}}",
+              "type": "string"
+            },
+            {
+              "id": "acbb954a-5c12-4e09-9642-931afa014225",
+              "name": "personal_email_sender",
+              "value": "{{$json.personal_email_sender || false}}",
+              "type": "string"
+            },
+            {
+              "id": "84f09293-e854-48fd-b311-f68797898169",
+              "name": "timestamp",
+              "value": "={{$now}}",
+              "type": "string"
+            },
+            {
+              "id": "eddc4d80-fbc8-4be2-889d-d3929515efdc",
+              "name": "trust_level",
+              "value": "={{$json.trust_level}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5520,
+        1424
+      ],
+      "id": "4ea0c338-cc7a-4832-aed5-44afaa6471b6",
+      "name": "Prepare Sheet Record"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Code in Python",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clean data": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier1": {
+      "main": [
+        [
+          {
+            "node": "generic job ads",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "junks,ads,spam/promotions",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "otp,logins,password change ,register",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "personal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "interview",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "real recruitment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "others",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "otp,logins,password change ,register": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "real recruitment": {
+      "main": [
+        [
+          {
+            "node": "Get a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "interview": {
+      "main": [
+        [
+          {
+            "node": "Get a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "personal": {
+      "main": [
+        [
+          {
+            "node": "Send a message3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Send a message4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Initialize Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initialize Score": {
+      "main": [
+        [
+          {
+            "node": "Extract Sender Information",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a message": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a message1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "SPF / DKIM / DMARC Validation": {
+      "main": [
+        [
+          {
+            "node": "Gemini Structured Output",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Extract Sender Information": {
+      "main": [
+        [
+          {
+            "node": "Company Website Check",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Medium Trust Branch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final Trust Level": {
+      "main": [
+        [
+          {
+            "node": "Build Audit Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Structured Output": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fraud Risk Score",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Website Present?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Trust Scoring": {
+      "main": [
+        [
+          {
+            "node": "Final Trust Level",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add label to message": {
+      "main": [
+        [
+          {
+            "node": "Send a message5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Official Domain Extract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Add label to message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Company Website Check": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Website Verification Score": {
+      "main": [
+        [
+          {
+            "node": "SPF / DKIM / DMARC Validation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Company Intelligence Score": {
+      "main": [
+        [
+          {
+            "node": "AI Trust Scoring",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Website Verification Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Official Domain Extract": {
+      "main": [
+        [
+          {
+            "node": "Merge Official Domain",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Official Domain": {
+      "main": [
+        [
+          {
+            "node": "Domain Match Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge4": {
+      "main": [
+        [
+          {
+            "node": "Extract Domain Age",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Domain Match Score": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Prepare WHOIS Domain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Domain Age": {
+      "main": [
+        [
+          {
+            "node": "Company Intelligence Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Domain Age Lookup": {
+      "main": [
+        [
+          {
+            "node": "Extract Domain Age",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fraud Risk Score": {
+      "main": [
+        [
+          {
+            "node": "Personal Domain Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Personal Domain Check": {
+      "main": [
+        [
+          {
+            "node": "Personal Email?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Personal Email?": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Website Present?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Company Search": {
+      "main": [
+        [
+          {
+            "node": "Code in Python1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare WHOIS Domain": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Company Exists Score": {
+      "main": [
+        [
+          {
+            "node": "Merge Official Domain Sources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Audit Record": {
+      "main": [
+        [
+          {
+            "node": "Prepare Sheet Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Gemini Structured Output",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in Python": {
+      "main": [
+        [
+          {
+            "node": "clean data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Domain Age Lookup",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": ".com Check IF node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    ".com Check IF node": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Website Present?": {
+      "main": [
+        [
+          {
+            "node": "Extract Domain From Website",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Company Name Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Domain From Website": {
+      "main": [
+        [
+          {
+            "node": "Skip Search Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Skip Search Result": {
+      "main": [
+        [
+          {
+            "node": "Merge Official Domain Sources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Official Domain Sources": {
+      "main": [
+        [
+          {
+            "node": "Merge Official Domain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Company Name Exists?": {
+      "main": [
+        [
+          {
+            "node": "Google Company Search",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Skip Search Result1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Skip Search Result1": {
+      "main": [
+        [
+          {
+            "node": "Merge Official Domain Sources",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code in Python1": {
+      "main": [
+        [
+          {
+            "node": "Company Exists Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Sheet Record": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "d4b1c165-8278-4be8-9d43-82fb4a4d4474",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "YOUR_INSTANCE_ID"
+  },
+  "id": "LEQgcGNmzDMvHjBr",
+  "tags": []
+}
