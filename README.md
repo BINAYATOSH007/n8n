@@ -1,126 +1,285 @@
 # n8n
-Collection of real-world automation workflows built using n8n, focusing on AI integrations, process automation, and event-driven systems.
 
+A collection of real-world AI automation workflows built using n8n, focusing on intelligent orchestration, multi-agent systems, trust verification, and event-driven automation.
 
-1.📂 Current Project
-  🔹 MindBinX AI — LLM-Powered Email Orchestration Platform
-      An intelligent multi-AI-agent email automation workflow that monitors incoming emails in real time, classifies them using LLMs, extracts structured
-      information, automates recruiter engagement, and orchestrates interview workflows with Gmail and Google Calendar integrations.
-  
-  📂 How to Use
-  
-          Import the JSON file into n8n
-          Add your Gmail credentials
-          Configure Gemini API key
-          Activate the workflow
+---
 
-  ⚙️ Features
-  
-         - 📥 Real-Time Gmail Trigger Monitoring
-         - 🧠 Multi-Agent AI Email Classification
-         - 🏷️ Automatic Gmail Labeling & Routing
-         - 📤 Intelligent Auto-Forwarding of Priority Emails
-         - 🔍 AI-Powered Information Extraction
-         - 🤖 Context-Aware Recruiter Reply Drafting
-         - 📅 Automated Interview Scheduling with Google Calendar
-         - 🔀 Conditional Workflow Branching & Merge Pipelines
-         - ⚡ Fully Event-Driven Automation System
-        
-  🧠 Tech Stack
-  
-          Automation Engine: n8n
-          AI Model(LLM / AI): Google Gemini (LLM)
-          Email Integration: Gmail API
-          Logic Design/Architecture: Event-Driven Multi-Agent Workflow 
-          Scheduling : Google Calendar API 
-          Orchestration : LangChain 
+# 📂 Current Project
 
-  🧠 AI Capabilities
+## 🔹 MindBinX AI — AI Recruitment Trust & Email Intelligence Platform
 
-      The workflow intelligently classifies emails into:
+      MindBinX AI is an advanced AI-powered email intelligence and recruitment trust platform built using n8n, Google Gemini, Gmail APIs, Google Calendar APIs, SerpAPI, and WHOIS intelligence.
       
-      - Recruitment
-      - Interview
-      - OTP / Security
-      - Spam / Promotions
-      - Personal
-      - Generic Job Alerts
-      - Others
-      
-      It also extracts structured metadata such as:
-      
-      - Company Name
-      - Interview Date & Time
-      - Meeting Links
-      - Interview Mode
-      - Recruiter Information
-      
-      --- 
+      The platform continuously monitors incoming emails, classifies them using LLMs, extracts structured information, evaluates recruiter authenticity, detects fraud indicators, automates interview scheduling, generates AI-powered responses, and maintains a complete audit trail of trust decisions.
 
-  🏗️ Workflow Architecture
-  
-        Gmail Trigger → detects new emails
-        AI Extractor → extracts sender info
-        Conditional Logic → handles missing data
-        AI Classifier → categorizes email
-        Gmail Actions → apply labels + forward emails
-        ```text
-          Gmail Trigger
-                ↓
-          AI Classification Agent
-                ↓
-          Conditional Routing Logic
-                ↓
-          Information Extraction Agent
-                ↓
-          Recruiter Reply Agent
-                ↓
-          Gmail Draft Automation
-                ↓
-          Google Calendar Scheduling
-                ↓
-          Notification & Reminder System
+---
+
+# 🚀 Key Capabilities
+    
+    ### 📥 Email Intelligence
+    
+    * Real-Time Gmail Monitoring
+    * AI-Powered Email Classification
+    * Automatic Gmail Labeling
+    * Intelligent Email Routing
+    * Priority Email Detection
+    * AI-Powered Information Extraction
+    
+    ### 🛡️ Recruitment Trust Engine
+    
+    * Company Website Verification
+    * Google Company Existence Validation
+    * Official Domain Discovery
+    * Sender Domain Verification
+    * Domain Match Analysis
+    * WHOIS Domain Age Verification
+    * SPF Validation
+    * DKIM Validation
+    * DMARC Validation
+    * Fraud Risk Detection
+    * Personal Email Detection
+    * Suspicious Domain Detection
+    * Link Mismatch Detection
+    * Recruiter Trust Scoring
+    
+    ### 🤖 AI Automation
+    
+    * Context-Aware Recruiter Reply Generation
+    * Smart Gmail Draft Creation
+    * Interview Detail Extraction
+    * Multi-Agent Decision Making
+    * Dynamic Workflow Routing
+    
+    ### 📅 Interview Automation
+    
+    * Interview Detection
+    * Calendar Event Creation
+    * Interview Reminder Generation
+    * Automated Candidate Notifications
+    
+    ### 📊 Audit & Transparency
+    
+    * Google Sheets Audit Logging
+    * Trust Score Tracking
+    * Decision Traceability
+    * Historical Email Intelligence Records
+
+---
+
+# 📂 How To Use
+    
+    1. Import the workflow JSON into n8n
+    2. Configure Gmail credentials
+    3. Configure Google Gemini credentials
+    4. Configure Google Calendar credentials
+    5. Configure SerpAPI credentials
+    6. Configure WHOIS API credentials
+    7. Configure Google Sheets credentials
+    8. Activate the workflow
+
+---
+
+# 🧠 AI Capabilities
+
+    The AI system automatically classifies emails into:
+    
+    * Real Recruitment
+    * Interview
+    * Generic Job Alerts
+    * Personal
+    * OTP / Security
+    * Spam / Promotions
+    * Others
+    
+    The AI extraction engine automatically identifies:
+    
+    * Company Name
+    * Recruiter Name
+    * Job Title
+    * Interview Date
+    * Interview Time
+    * Meeting Platform
+    * Meeting Link
+    * Company Website
+    * Sender Information
+
+---
+
+# 🏗️ Recruitment Trust Architecture
+
+    ```text
+    Gmail Trigger
+          ↓
+    AI Email Classification
+          ↓
+    Information Extraction
+          ↓
+    Initialize Trust Score
+          ↓
+    Company Website Verification
+          ↓
+    SPF / DKIM / DMARC Validation
+          ↓
+    Fraud Risk Detection
+          ↓
+    Personal Domain Check
+          ↓
+    Google Company Search
+          ↓
+    Official Domain Extraction
+          ↓
+    Domain Match Analysis
+          ↓
+    WHOIS Domain Age Verification
+          ↓
+    Company Intelligence Scoring
+          ↓
+    AI Trust Scoring
+          ↓
+    Final Trust Level
+          ↓
+    Google Sheets Audit Log
+          ↓
+    Workflow Routing
     ```
     
-  An intelligent workflow that:
+    ---
+
+# 🎯 Trust Signals
     
-      📥 Monitors incoming emails in real-time
-      🧠 Classifies emails into categories (Jobs, Spam, OTP, Personal, Career, Others)
-      🏷️ Applies labels automatically in Gmail
-      📤 Forwards important emails to a secondary inbox to my main account
-      🔍 Extracts sender information using AI
-  
-  💡 Use Cases
-  
-       - Intelligent inbox management
-       - Recruitment email prioritization
-       - Interview workflow automation
-       - AI-assisted recruiter engagement
-       - Spam reduction & inbox triage
-       - Event-driven workflow orchestration
+    | Signal                         | Impact   |
+    | ------------------------------ | -------- |
+    | Official Domain Match          | Positive |
+    | Domain Age Verification        | Positive |
+    | SPF Validation                 | Positive |
+    | DKIM Validation                | Positive |
+    | DMARC Validation               | Positive |
+    | Company Existence Verification | Positive |
+    | Personalized Communication     | Positive |
+    | Interview Signals              | Positive |
+    | Spam Indicators                | Negative |
+    | Fraud Indicators               | Negative |
+    | Suspicious Domains             | Negative |
+    | Link Mismatch Detection        | Negative |
+    
+  ---
 
-  🔒 Security Note
+# 📊 Trust Levels
+      
+      ### 🟢 Trusted
+      
+      * High recruiter confidence
+      * Automated processing
+      * Calendar scheduling enabled
+      * AI draft generation enabled
+      
+      ### 🟡 Review
+      
+      * Medium confidence
+      * Manual verification recommended
+      
+      ### 🔴 Suspicious
+      
+      * High fraud risk
+      * Automatically labeled
+      * Logged for investigation
+      * No automated actions executed
+      
+  ---
 
-        All credentials and personal data have been removed.
-        Please configure your own credentials before running the workflow.
+# 🧰 Technology Stack
 
-  🚀 Upcoming Enhancements
+    ### Automation
+    
+    * n8n
+    
+    ### AI / LLM
+    
+    * Google Gemini
+    
+    ### Email
+    
+    * Gmail API
+    
+    ### Scheduling
+    
+    * Google Calendar API
+    
+    ### Search Intelligence
+    
+    * SerpAPI
+    
+    ### Domain Intelligence
+    
+    * WHOIS API (API Ninjas)
+    
+    ### Audit Logging
+    
+    * Google Sheets API
+    
+    ### Programming
+    
+    * Python
+    
+    ### Orchestration
+    
+    * LangChain
+    
+  ---
 
-        - Recruiter trust scoring system
-        - SPF/DKIM/DMARC validation
-        - AI phishing detection
-        - Workflow analytics dashboard
-        - Multi-channel notifications (Slack/Discord)
-        - Vector memory & recruiter history tracking
+# 💡 Use Cases
+    
+    * Recruitment Email Intelligence
+    * Recruiter Verification
+    * Interview Workflow Automation
+    * AI-Assisted Candidate Engagement
+    * Email Fraud Detection
+    * Inbox Prioritization
+    * Trust-Based Email Routing
+    * Intelligent Audit Logging
 
+---
 
-📌 Repository Goal
+# 🔒 Security
 
-    This repository will continuously evolve with advanced AI automation workflows, intelligent orchestration systems, and real-world event-driven automation     
-    projects built using n8n and LLM ecosystems.
+    All credentials, API keys, personal information, and sensitive data have been removed from this repository.
+    
+    Users must configure their own credentials before running the workflow.
 
-🚀 Upcoming Projects
+---
 
-This repository will be continuously updated with advanced automation workflows.
-Thank you
+# 📈 Future Roadmap
 
+### Version 2
+
+    * Recruiter Reputation Database
+    * Company Trust History
+    * Vector Memory Integration
+    * AI Explainability Dashboard
+    * Trust Analytics Dashboard
+    * Slack / Discord Notifications
+    * PostgreSQL Audit Storage
+    * Multi-Channel Communication
+    * ATS Integration
+    * RAG-Based Recruiter Intelligence
+
+---
+
+# 🏆 Project Highlights
+    
+    * Multi-Agent AI Workflow
+    * Recruitment Trust Engine
+    * Domain Intelligence System
+    * Email Security Validation
+    * Interview Automation Platform
+    * AI-Powered Decision Engine
+    * Explainable Trust Scoring
+    * Audit Logging & Transparency
+
+---
+
+## Repository Goal
+
+This repository showcases production-inspired AI automation workflows, intelligent orchestration systems, and real-world event-driven automation projects built using n8n, LLMs, and modern AI ecosystems.
+
+New workflows and advanced AI automation projects will be added continuously.
