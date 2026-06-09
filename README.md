@@ -5,6 +5,9 @@ A collection of real-world AI automation workflows built using n8n, focusing on 
 ---
 <img width="2560" height="1440" alt="MindBinX_AI_Infographic (1)" src="https://github.com/user-attachments/assets/df4f3be5-efb7-4dbe-8831-40d304b05a6f" />
 
+<img width="1536" height="1024" alt="MindBinXAI" src="https://github.com/user-attachments/assets/69012909-c984-4803-acfe-d1890261aa61" />
+
+
 # 📂 Current Project
 
 ## 🔹 MindBinX AI — AI Recruitment Trust & Email Intelligence Platform
